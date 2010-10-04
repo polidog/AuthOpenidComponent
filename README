@@ -1,0 +1,43 @@
+1.get OpenID component for CakePHP
+http://code.42dh.com/openid/
+
+2.edit for vender/Auth/Yadis/ParanoidHTTPFetcher.php
+curl_exec two modifications to the front line
+line 139 and 211
+
+------------------
+
+if ($this->isHTTPS($url) && isset($GLOBALS['openid_pem'])) {
+  curl_setopt($c, CURLOPT_CAINFO, $GLOBALS['openid_pem']);
+}
+
+-----------------
+
+
+3.get cacert.pem from http://curl.haxx.se/docs/caextract.html
+cacert.pem into the vendor directory
+
+
+
+5.create UsersController
+
+<?php
+class UsersController extends AppController {
+  var $name = 'Users';
+  var $helpers = array('Html', 'Form');
+  var $components = array('AuthOpenid');
+		        
+  function beforeFilter() {
+	  $this->AuthOpenid->loginRedirect = "/index";
+	  $this->AuthOpenid->openidUrl = "https://mixi.jp";
+	  $this->AuthOpenid->openidPem =  APP.DS."config".DS."cacert.pem";
+          $this->AuthOpenid->fileds['username'] = 'openid';
+	  $this->AuthOpenid->cancelRedirect = "/";
+          $this->AuthOpenid->allow('index');
+  }
+								        
+ function login() {
+							        	
+ }
+}
+?>
